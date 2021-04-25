@@ -1,9 +1,11 @@
+import { ReactElement } from 'react';
 import GameTicTacToe from './components/games/TicTacToe';
-import './App.css';
 
-function App () {
+function App (): ReactElement {
   return (
-    <GameTicTacToe />
+    <>
+      <GameTicTacToe />
+    </>
   );
 }
 
