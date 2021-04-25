@@ -1,7 +1,8 @@
 import React from 'react';
 import './TicTacToe.css';
 
-
+// ----------------------------------------
+// functions
 function calculateWinner (squares: Array<string>) {
   const lines = [
     [0, 1, 2],
@@ -22,13 +23,16 @@ function calculateWinner (squares: Array<string>) {
   return null;
 }
 
-
+// ----------------------------------------
+// Square
 type SquareProps = {
   onClick: Function,
   value: string
 }
+type SquareState = {
 
-class Square extends React.Component<SquareProps> {
+}
+class Square extends React.Component<SquareProps, SquareState> {
   constructor (props: SquareProps) {
     super(props);
   }
@@ -41,14 +45,17 @@ class Square extends React.Component<SquareProps> {
   };
 }
 
-
+// ----------------------------------------
+// Board
 type BoardProps = {
   onClick: Function,
   squares: Array<string>,
   value?: string
 }
+type BoardState = {
 
-class Board extends React.Component<BoardProps> {
+}
+class Board extends React.Component<BoardProps, BoardState> {
   constructor (props: BoardProps) {
     super(props);
   }
@@ -85,17 +92,16 @@ class Board extends React.Component<BoardProps> {
   }
 }
 
-
+// ----------------------------------------
+// Game
 type GameTicTacToeProps = {
 
 }
-
 type GameTicTacToeState = {
   history: Array<{squares: Array<string>}>,
   stepNumber: number,
   xIsNext: boolean
 }
-
 class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeState> {
   constructor (props: GameTicTacToeProps) {
     super(props);
@@ -166,4 +172,6 @@ class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeSta
   }
 }
 
+// ----------------------------------------
+// exports
 export default GameTicTacToe;
