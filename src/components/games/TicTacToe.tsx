@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import './TicTacToe.css';
 
 // ----------------------------------------
 // functions
-function calculateWinner (squares: Array<string>) {
+function calculateWinner (squares: Array<string>): string | null {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -36,12 +36,12 @@ class Square extends React.Component<SquareProps, SquareState> {
   constructor (props: SquareProps) {
     super(props);
   }
-  render () {
+  render (): ReactElement {
     return (
       <button className="square" onClick={() => this.props.onClick()}>
         {this.props.value}
       </button>
-    )
+    );
   };
 }
 
@@ -60,7 +60,7 @@ class Board extends React.Component<BoardProps, BoardState> {
     super(props);
   }
 
-  renderSquare (i: number) {
+  renderSquare (i: number): ReactElement {
     return (
       <Square
         onClick={() => this.props.onClick(i)}
@@ -69,7 +69,7 @@ class Board extends React.Component<BoardProps, BoardState> {
     );
   }
 
-  render () {
+  render (): ReactElement {
     return (
       <div>
         <div className="board-row">
@@ -106,13 +106,13 @@ class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeSta
   constructor (props: GameTicTacToeProps) {
     super(props);
     this.state = {
-      history: [{ squares: Array(9).fill(null) }],
+      history: [{ squares: Array(9).fill('') }],
       stepNumber: 0,
       xIsNext: true
     };
   }
 
-  handleClick (i: number) {
+  handleClick (i: number): void {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -127,14 +127,14 @@ class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeSta
     });
   }
 
-  jumpTo (step: number) {
+  jumpTo (step: number): void {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0
     });
   }
 
-  render () {
+  render (): ReactElement {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
@@ -148,7 +148,7 @@ class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeSta
       );
     });
 
-    let status;
+    let status = '';
     if (winner) {
       status = `Winner: ${winner}`;
     } else {
