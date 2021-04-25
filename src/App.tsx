@@ -1,9 +1,9 @@
 import GameTicTacToe from './components/games/TicTacToe';
 import './App.css';
 
-function App() {
+function App () {
   return (
-    <GameTicTacToe></GameTicTacToe>
+    <GameTicTacToe />
   );
 }
 
