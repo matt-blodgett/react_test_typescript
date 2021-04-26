@@ -1,8 +1,9 @@
 import React, { ReactElement } from 'react';
-import './TicTacToe.css';
+import Button from '@material-ui/core/Button';
 
-// ----------------------------------------
-const WINNING_LINES = [
+import useStyles from './style';
+
+const winningLines = [
   [0, 1, 2],
   [3, 4, 5],
   [6, 7, 8],
@@ -12,139 +13,107 @@ const WINNING_LINES = [
   [0, 4, 8],
   [2, 4, 6]
 ];
-Object.freeze(WINNING_LINES);
+Object.freeze(winningLines);
 
-// ----------------------------------------
-function checkWinner (squareValues: Array<string>): string | null {
-  for (let line of WINNING_LINES) {
+function checkCurrentWinner (cellValues: Array<string>): string | null {
+  for (let line of winningLines) {
     const [a, b, c] = line;
-    if (squareValues[a] && squareValues[a] === squareValues[b] && squareValues[a] === squareValues[c]) {
-      return squareValues[a];
+    if (cellValues[a] && cellValues[a] === cellValues[b] && cellValues[a] === cellValues[c]) {
+      return cellValues[a];
     }
   }
   return null;
 }
 
-function checkBoardFull (squareValues: Array<string>): boolean {
+function checkIsBoardFull (cellValues: Array<string>): boolean {
   for (let cell = 0; cell <= 8; cell++) {
-    if (!['X', 'O'].includes(squareValues[cell])) {
+    if (!['X', 'O'].includes(cellValues[cell])) {
       return false;
     }
   }
   return true;
 }
 
-// ----------------------------------------
 type SquareProps = {
-  onClick: Function,
+  onClick: () => void,
   value: string
 }
-type SquareState = {
+function Square (props: SquareProps) {
+  const classes = useStyles();
 
+  return (
+    <button className={classes.square} onClick={() => props.onClick()}>{props.value}</button>
+  );
 }
-class Square extends React.Component<SquareProps, SquareState> {
-  constructor (props: SquareProps) {
-    super(props);
-  }
 
-  render () {
+type BoardProps = {
+  onClick: (i: number) => void,
+  cellValues: Array<string>
+}
+function Board (props: BoardProps) {
+
+  const renderSquare = (i: number): ReactElement => {
     return (
-      <>
-        <button className="square" onClick={() => this.props.onClick()}>{this.props.value}</button>
-      </>
+      <Square
+        onClick={() => props.onClick(i)}
+        value={props.cellValues[i]}
+      />
     );
   };
+
+  return (
+    <div>
+      <div>
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
+      </div>
+      <div>
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div>
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </div>
+    </div>
+  );
 }
 
-// ----------------------------------------
-type BoardProps = {
-  onClick: Function,
-  squareValues: Array<string>
-}
-type BoardState = {
-
-}
-class Board extends React.Component<BoardProps, BoardState> {
-  constructor (props: BoardProps) {
-    super(props);
-  }
-
-  renderSquare (i: number): ReactElement {
-    return (
-      <>
-        <Square
-          onClick={() => this.props.onClick(i)}
-          value={this.props.squareValues[i]}
-        />
-      </>
-    );
-  }
-
-  render () {
-    return (
-      <>
-        <div className="board">
-          <div className="board-row">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(3)}
-            {this.renderSquare(4)}
-            {this.renderSquare(5)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(6)}
-            {this.renderSquare(7)}
-            {this.renderSquare(8)}
-          </div>
-        </div>
-      </>
-    );
-  }
-}
-
-// ----------------------------------------
-type GameTicTacToeProps = {
-
-}
-type GameTicTacToeState = {
-  history: Array<{squareValues: Array<string>}>,
+type GameState = {
+  cellValues: Array<string>,
   gameNumber: number,
   moveNumber: number,
   isNextX: boolean,
-  wins: {
-    X: number,
-    O: number,
-    draws: number
-  }
+  currentPlayer: string,
+  currentWinner: null | string,
+  isBoardFull: boolean,
+  totalWinsX: number,
+  totalWinsO: number,
+  totalWinsDraws: number
 }
-class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeState> {
-  refGameAlert: React.RefObject<HTMLDivElement>;
-  constructor (props: GameTicTacToeProps) {
-    super(props);
-    this.state = {
-      history: [
-        {
-          squareValues: Array(9).fill('')
-        }
-      ],
-      gameNumber: 1,
-      moveNumber: 0,
-      isNextX: true,
-      wins: {
-        X: 0,
-        O: 0,
-        draws: 0
-      }
-    };
+const nullGameState = {
+  cellValues: Array(9).fill(''),
+  gameNumber: 1,
+  moveNumber: 0,
+  isNextX: true,
+  currentPlayer: 'X',
+  currentWinner: null,
+  isBoardFull: false,
+  totalWinsX: 0,
+  totalWinsO: 0,
+  totalWinsDraws: 0
+};
+export default function TicTacToe () {
+  const classes = useStyles();
 
-    this.refGameAlert = React.createRef();
-  }
+  const refGameAlert = React.createRef<HTMLDivElement>();
+  const [gameState, setGameState] = React.useState<GameState>(nullGameState);
 
-  showGameAlert (message: string): void {
-    let div = this.refGameAlert.current;
+  const showGameAlert = (message: string): void => {
+    let div = refGameAlert.current;
     if (div) {
       div.style.display = 'block';
       div.style.opacity = '0';
@@ -161,187 +130,175 @@ class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeSta
         }
       }
     }, 100);
-  }
+  };
 
-  hideGameAlert (): void {
-    let div = this.refGameAlert.current;
+  const hideGameAlert = (): void => {
+    let div = refGameAlert.current;
     if (div) {
       div.style.display = 'none';
       div.style.opacity = '0';
       div.textContent = '';
     }
-  }
+  };
 
-  newGame (): void {
-    this.hideGameAlert();
-    this.setState({
-      history: [
-        {
-          squareValues: Array(9).fill('')
-        }
-      ],
-      gameNumber: this.state.gameNumber + 1,
+  const newGame = (): void => {
+    hideGameAlert();
+    setGameState({
+      cellValues: Array(9).fill(''),
+      gameNumber: gameState.gameNumber + 1,
       moveNumber: 0,
       isNextX: true,
-      wins: {
-        X: 0,
-        O: 0,
-        draws: 0
-      }
+      currentPlayer: 'X',
+      currentWinner: null,
+      isBoardFull: false,
+      totalWinsX: gameState.totalWinsX,
+      totalWinsO: gameState.totalWinsO,
+      totalWinsDraws: gameState.totalWinsDraws
     });
-  }
+  };
 
-  resetBoard (): void {
-    this.hideGameAlert();
-    this.setState({
-      history: [
-        {
-          squareValues: Array(9).fill('')
-        }
-      ],
+  const resetBoard = (): void => {
+    hideGameAlert();
+    setGameState({
+      cellValues: Array(9).fill(''),
       gameNumber: 1,
       moveNumber: 0,
       isNextX: true,
-      wins: {
-        X: 0,
-        O: 0,
-        draws: 0
-      }
+      currentPlayer: 'X',
+      currentWinner: null,
+      isBoardFull: false,
+      totalWinsX: 0,
+      totalWinsO: 0,
+      totalWinsDraws: 0
     });
-  }
+  };
 
-  handleClick (i: number): void {
-    const historyState = this.state.history.slice(0, this.state.moveNumber + 1);
-    const currentState = historyState[historyState.length - 1];
-    const squareValues = currentState.squareValues.slice();
-
-    let currentWinner = checkWinner(squareValues);
-    let isBoardFull = checkBoardFull(squareValues);
-    if (currentWinner || isBoardFull || squareValues[i]) {
+  const handleClick = (cell: number): void => {
+    if (gameState.cellValues[cell] || gameState.currentWinner || gameState.isBoardFull) {
       return;
     }
 
-    squareValues[i] = this.state.isNextX ? 'X' : 'O';
+    let cellValues = gameState.cellValues.slice();
+    let currentWinner = checkCurrentWinner(cellValues);
+    let isBoardFull = checkIsBoardFull(cellValues);
+    if (currentWinner || isBoardFull || cellValues[cell]) {
+      return;
+    }
 
-    this.setState({
-      history: historyState.concat([
-        {
-          squareValues: squareValues
-        }
-      ]),
-      moveNumber: historyState.length,
-      isNextX: !this.state.isNextX
+    cellValues[cell] = gameState.isNextX ? 'X' : 'O';;
+
+    setGameState({
+      ...gameState,
+      cellValues: cellValues,
+      moveNumber: gameState.moveNumber + 1,
+      isNextX: !gameState.isNextX,
+      currentPlayer: !gameState.isNextX ? 'X' : 'O'
     });
 
-    currentWinner = checkWinner(squareValues);
-    isBoardFull = checkBoardFull(squareValues);
+    currentWinner = checkCurrentWinner(cellValues);
+    isBoardFull = checkIsBoardFull(cellValues);
     if (currentWinner || isBoardFull) {
-      this.setState({
-        wins: {
-          X: this.state.wins.X + (currentWinner === 'X' ? 1 : 0),
-          O: this.state.wins.O + (currentWinner === 'O' ? 1 : 0),
-          draws: this.state.wins.draws + (isBoardFull ? 1 : 0)
-        }
-      });
-    }
-  }
-
-  test (): void {
-    console.log('test');
-    let div = this.refGameAlert.current;
-    if (div) {
-      console.log(this.refGameAlert);
-    }
-  }
-
-  render () {
-    const historyState = this.state.history;
-    const currentState = historyState[this.state.moveNumber];
-    const currentPlayer = this.state.isNextX ? 'X' : 'O';
-    const currentWinner = checkWinner(currentState.squareValues);
-    const isBoardFull = checkBoardFull(currentState.squareValues);
-
-    if (currentWinner || isBoardFull) {
-      let message = '';
-      if (!currentWinner && isBoardFull) {
-        message = 'Draw!';
-      } else {
-        message = `Player ${currentWinner} wins!`;
+      if (currentWinner === 'X') {
+        setGameState({
+          ...gameState,
+          cellValues: cellValues,
+          currentWinner: currentWinner,
+          isBoardFull: isBoardFull,
+          totalWinsX: gameState.totalWinsX + 1,
+          totalWinsO: gameState.totalWinsO,
+          totalWinsDraws: gameState.totalWinsDraws
+        });
+      } else if (currentWinner === 'O') {
+        setGameState({
+          ...gameState,
+          cellValues: cellValues,
+          currentWinner: currentWinner,
+          isBoardFull: isBoardFull,
+          totalWinsX: gameState.totalWinsX,
+          totalWinsO: gameState.totalWinsO + 1,
+          totalWinsDraws: gameState.totalWinsDraws
+        });
+      } else if (isBoardFull) {
+        setGameState({
+          ...gameState,
+          cellValues: cellValues,
+          currentWinner: currentWinner,
+          isBoardFull: isBoardFull,
+          totalWinsX: gameState.totalWinsX,
+          totalWinsO: gameState.totalWinsO,
+          totalWinsDraws: gameState.totalWinsDraws + 1
+        });
       }
-      this.showGameAlert(message);
-    }
 
-    return (
-      <>
-        <div className="game-parent">
-          <h1>Tic Tac Toe</h1>
-          <div className="game-alert" ref={this.refGameAlert} />
-          <div className="game-container">
-            <div className="game-left">
-              <div className="game-buttons">
-                <button className="button-game button-new" onClick={() => this.newGame()}>New Game</button>
-                <button className="button-game button-reset" onClick={() => this.resetBoard()}>Reset Board</button>
-                <button className="button-game button-test" onClick={() => this.test()}>Test</button>
-              </div>
-            </div>
-            <div className="game-board">
-              <Board
-                squareValues={currentState.squareValues}
-                onClick={(i: number) => this.handleClick(i)}
-              />
-              <div className="game-bottom">
-                <div>{currentWinner || isBoardFull ? '' : `Current player: ${currentPlayer}`}</div>
-              </div>
-            </div>
-            <div className="game-right">
-              <div>
-                <table className="table-game">
-                  <thead>
-                    <tr>
-                      <th colSpan={2}>Game</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Game</td>
-                      <td>{this.state.gameNumber}</td>
-                    </tr>
-                    <tr>
-                      <td>Move</td>
-                      <td>{this.state.moveNumber}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <table className="table-wins">
-                  <thead>
-                    <tr>
-                      <th colSpan={2}>Wins</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Player X</td>
-                      <td>{this.state.wins.X}</td>
-                    </tr>
-                    <tr>
-                      <td>Player O</td>
-                      <td>{this.state.wins.O}</td>
-                    </tr>
-                    <tr>
-                      <td>Draws</td>
-                      <td>{this.state.wins.draws}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+      if (!currentWinner && isBoardFull) {
+        showGameAlert('Draw!');
+      } else {
+        showGameAlert(`Player ${currentWinner} wins!`);
+      }
+    }
+  };
+
+  return (
+    <div className={classes.gameParent}>
+      <h1 className={classes.gameTitle}>Tic Tac Toe</h1>
+      <div className={classes.gameAlert} ref={refGameAlert} />
+      <div className={classes.gameContainer}>
+        <div className={classes.gameLeft}>
+          <div className={classes.gameButtons}>
+            <Button className={`${classes.buttonGame} ${classes.buttonNew}`} variant="contained" color="primary" onClick={() => newGame()}>New Game</Button>
+            <Button className={`${classes.buttonGame} ${classes.buttonReset}`} variant="contained" color="secondary" onClick={() => resetBoard()}>Reset Board</Button>
           </div>
         </div>
-      </>
-    );
-  }
+        <div>
+          <Board
+            cellValues={gameState.cellValues}
+            onClick={(i: number) => handleClick(i)}
+          />
+          <div className={classes.gameBottom}>
+            <div>{gameState.currentWinner || gameState.isBoardFull ? '' : `Current player: ${gameState.currentPlayer}`}</div>
+          </div>
+        </div>
+        <div className={classes.gameRight}>
+          <table className={classes.tableGame}>
+            <thead>
+              <tr>
+                <th colSpan={2}>Game</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Game</td>
+                <td>{gameState.gameNumber}</td>
+              </tr>
+              <tr>
+                <td>Move</td>
+                <td>{gameState.moveNumber}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table className={classes.tableWins}>
+            <thead>
+              <tr>
+                <th colSpan={2}>Wins</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Player X</td>
+                <td>{gameState.totalWinsX}</td>
+              </tr>
+              <tr>
+                <td>Player O</td>
+                <td>{gameState.totalWinsO}</td>
+              </tr>
+              <tr>
+                <td>Draws</td>
+                <td>{gameState.totalWinsDraws}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-// ----------------------------------------
-// exports
-export default GameTicTacToe;

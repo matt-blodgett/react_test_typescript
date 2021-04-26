@@ -33,8 +33,14 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center',
       padding: theme.spacing(0, 1),
       ...theme.mixins.toolbar,
-      justifyContent: 'flex-center',
+      justifyContent: 'center',
       textAlign: 'center'
+    },
+    drawerItem: {
+      '&:hover': {
+        borderTop: '1px solid #BCBCBC',
+        borderBottom: '1px solid #BCBCBC'
+      }
     },
     content: {
       flexGrow: 1,

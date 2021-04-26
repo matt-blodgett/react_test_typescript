@@ -4,21 +4,18 @@ import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 
 import MainAppBar from './MainAppBar';
 import MainDrawer from './MainDrawer';
-import useStyles from './mainStyle';
-
 import RouterView from '../router/RouterView';
 
+import useStyles from './style';
 
 export default function MainLayout () {
   const classes = useStyles();
   const history = useHistory();
 
-  const [isDrawerOpen, toggleDrawer] = React.useState(false);
+  const [isDrawerOpen, toggleDrawer] = React.useState<boolean>(false);
 
   const onToggleDrawer = () : void => {
     toggleDrawer(!isDrawerOpen);
@@ -45,17 +42,17 @@ export default function MainLayout () {
           {
             text: 'Home',
             action: () => changeView('/'),
-            icon: (<InboxIcon />)
+            icon: 'inbox'
           },
           {
             text: 'About',
             action: () => changeView('/about'),
-            icon: (<MailIcon />)
+            icon: 'mail'
           },
           {
             text: 'Tic Tac Toe',
             action: () => changeView('/tictactoe'),
-            icon: (<MailIcon />)
+            icon: 'star'
           }
         ]}
       />

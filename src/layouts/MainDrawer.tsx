@@ -1,22 +1,23 @@
 import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import Icon from '@material-ui/core/Icon';
 
-import useStyles from './mainStyle';
+import useStyles from './style';
 
 type MainDrawerItem = {
   text: string,
-  action: Function,
-  icon: JSX.Element
+  icon: string,
+  action: () => void
 }
 
 type MainDrawerProps = {
   isDrawerOpen: boolean,
-  onToggleDrawer: Function,
+  onToggleDrawer: () => void,
   drawerItems: Array<MainDrawerItem>
 }
 
@@ -44,8 +45,8 @@ export default function MainDrawer (props: MainDrawerProps) {
 
       <List>
         {props.drawerItems.map((drawerItem) => (
-          <ListItem button key={drawerItem.text} onClick={() => drawerItem.action()}>
-            <ListItemIcon>{drawerItem.icon}</ListItemIcon>
+          <ListItem className={classes.drawerItem} key={drawerItem.text} button onClick={() => drawerItem.action()}>
+            <ListItemIcon><Icon>{drawerItem.icon}</Icon></ListItemIcon>
             <ListItemText primary={drawerItem.text} />
           </ListItem>
         ))}

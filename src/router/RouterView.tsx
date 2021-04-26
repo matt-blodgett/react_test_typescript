@@ -6,7 +6,7 @@ export default function RouterView () {
     <div>
       <Switch>
         {routes.map((route) => (
-          <Route exact path={route.path} component={route.component} />
+          <Route key={route.path} exact path={route.path} component={route.component} />
         ))}
       </Switch>
     </div>

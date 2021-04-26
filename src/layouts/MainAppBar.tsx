@@ -4,13 +4,13 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import Icon from '@material-ui/core/Icon';
 
-import useStyles from './mainStyle';
+import useStyles from './style';
 
 type MainAppBarProps = {
   isDrawerOpen: boolean,
-  onToggleDrawer: Function
+  onToggleDrawer: () => void
 }
 
 export default function MainAppBar (props: MainAppBarProps) {
@@ -30,7 +30,7 @@ export default function MainAppBar (props: MainAppBarProps) {
           onClick={() => props.onToggleDrawer()}
           className={clsx(classes.menuButton)}
         >
-          <MenuIcon />
+          <Icon>menu</Icon>
         </IconButton>
         <Typography variant="h6" noWrap>
           Generic Brand Name
