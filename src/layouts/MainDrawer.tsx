@@ -20,7 +20,6 @@ type MainDrawerProps = {
   onToggleDrawer: () => void,
   drawerItems: Array<MainDrawerItem>
 }
-
 export default function MainDrawer (props: MainDrawerProps) {
   const classes = useStyles();
 

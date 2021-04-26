@@ -35,28 +35,60 @@ function checkIsBoardFull (cellValues: Array<string>): boolean {
 }
 
 type SquareProps = {
+  onMouseOver: () => void,
   onClick: () => void,
+  locked: boolean,
   value: string
 }
 function Square (props: SquareProps) {
   const classes = useStyles();
 
   return (
-    <button className={classes.square} onClick={() => props.onClick()}>{props.value}</button>
+    <button
+      className={props.locked ? classes.squareLocked : classes.square}
+      onMouseOver={() => props.onMouseOver()}
+      onClick={() => props.onClick()}
+    >{props.value}
+    </button>
   );
 }
 
+type HoveredCell = {
+  cell: number,
+  value: string
+}
 type BoardProps = {
-  onClick: (i: number) => void,
-  cellValues: Array<string>
+  onMouseOver: (cell: number) => void,
+  onClick: (cell: number) => void,
+  cellValues: Array<string>,
+  cellHovered: HoveredCell | null
 }
 function Board (props: BoardProps) {
 
-  const renderSquare = (i: number): ReactElement => {
+  const renderSquare = (cell: number): ReactElement => {
+    let cellLocked = false;
+    let cellValue = props.cellValues[cell];
+
+    let currentWinner = checkCurrentWinner(props.cellValues);
+    let isBoardFull = checkIsBoardFull(props.cellValues);
+
+    if (cellValue || currentWinner || isBoardFull) {
+      cellLocked = true;
+    } else {
+      let cellHovered = props.cellHovered;
+      if (cellHovered) {
+        if (cellHovered.cell === cell) {
+          cellValue = cellHovered.value;
+        }
+      }
+    }
+
     return (
       <Square
-        onClick={() => props.onClick(i)}
-        value={props.cellValues[i]}
+        onMouseOver={() => props.onMouseOver(cell)}
+        onClick={() => props.onClick(cell)}
+        locked={cellLocked}
+        value={cellValue}
       />
     );
   };
@@ -84,11 +116,12 @@ function Board (props: BoardProps) {
 
 type GameState = {
   cellValues: Array<string>,
+  cellHovered: HoveredCell | null,
   gameNumber: number,
   moveNumber: number,
   isNextX: boolean,
   currentPlayer: string,
-  currentWinner: null | string,
+  currentWinner: string | null,
   isBoardFull: boolean,
   totalWinsX: number,
   totalWinsO: number,
@@ -96,6 +129,7 @@ type GameState = {
 }
 const nullGameState = {
   cellValues: Array(9).fill(''),
+  cellHovered: null,
   gameNumber: 1,
   moveNumber: 0,
   isNextX: true,
@@ -129,7 +163,7 @@ export default function TicTacToe () {
           clearInterval(fadeEffect);
         }
       }
-    }, 100);
+    }, 25);
   };
 
   const hideGameAlert = (): void => {
@@ -145,6 +179,7 @@ export default function TicTacToe () {
     hideGameAlert();
     setGameState({
       cellValues: Array(9).fill(''),
+      cellHovered: null,
       gameNumber: gameState.gameNumber + 1,
       moveNumber: 0,
       isNextX: true,
@@ -161,6 +196,7 @@ export default function TicTacToe () {
     hideGameAlert();
     setGameState({
       cellValues: Array(9).fill(''),
+      cellHovered: null,
       gameNumber: 1,
       moveNumber: 0,
       isNextX: true,
@@ -173,7 +209,7 @@ export default function TicTacToe () {
     });
   };
 
-  const handleClick = (cell: number): void => {
+  const onClickBoard = (cell: number): void => {
     if (gameState.cellValues[cell] || gameState.currentWinner || gameState.isBoardFull) {
       return;
     }
@@ -238,6 +274,28 @@ export default function TicTacToe () {
     }
   };
 
+  const onMouseOutBoard = (): void => {
+    if (!(gameState.currentWinner || gameState.isBoardFull)) {
+      setGameState({
+        ...gameState,
+        cellHovered: null
+      });
+    }
+  };
+
+  const onMouseOverBoard = (cell: number): void => {
+    if (!(gameState.currentWinner || gameState.isBoardFull)) {
+      let cellHovered = {
+        cell: cell,
+        value: gameState.currentPlayer
+      };
+      setGameState({
+        ...gameState,
+        cellHovered: cellHovered
+      });
+    }
+  };
+
   return (
     <div className={classes.gameParent}>
       <h1 className={classes.gameTitle}>Tic Tac Toe</h1>
@@ -249,54 +307,42 @@ export default function TicTacToe () {
             <Button className={`${classes.buttonGame} ${classes.buttonReset}`} variant="contained" color="secondary" onClick={() => resetBoard()}>Reset Board</Button>
           </div>
         </div>
-        <div>
+        <div onMouseOut={() => onMouseOutBoard()}>
           <Board
+            onMouseOver={(cell: number) => onMouseOverBoard(cell)}
+            onClick={(cell: number) => onClickBoard(cell)}
             cellValues={gameState.cellValues}
-            onClick={(i: number) => handleClick(i)}
+            cellHovered={gameState.cellHovered}
           />
           <div className={classes.gameBottom}>
-            <div>{gameState.currentWinner || gameState.isBoardFull ? '' : `Current player: ${gameState.currentPlayer}`}</div>
+            <div>Game #{gameState.gameNumber}</div>
           </div>
         </div>
         <div className={classes.gameRight}>
-          <table className={classes.tableGame}>
-            <thead>
-              <tr>
-                <th colSpan={2}>Game</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Game</td>
-                <td>{gameState.gameNumber}</td>
-              </tr>
-              <tr>
-                <td>Move</td>
-                <td>{gameState.moveNumber}</td>
-              </tr>
-            </tbody>
-          </table>
-          <table className={classes.tableWins}>
-            <thead>
-              <tr>
-                <th colSpan={2}>Wins</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Player X</td>
-                <td>{gameState.totalWinsX}</td>
-              </tr>
-              <tr>
-                <td>Player O</td>
-                <td>{gameState.totalWinsO}</td>
-              </tr>
-              <tr>
-                <td>Draws</td>
-                <td>{gameState.totalWinsDraws}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className={classes.tableWinsContainer}>
+            <table className={classes.tableWins}>
+              <thead>
+                <tr>
+                  <th colSpan={2}>Wins</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className={classes.tableWinsCol1}>Player X</td>
+                  <td className={classes.tableWinsCol2}>{gameState.totalWinsX}</td>
+                </tr>
+                <tr>
+                  <td className={classes.tableWinsCol1}>Player O</td>
+                  <td className={classes.tableWinsCol2}>{gameState.totalWinsO}</td>
+                </tr>
+                <tr>
+                  <td className={classes.tableWinsCol1}>Draws</td>
+                  <td className={classes.tableWinsCol2}>{gameState.totalWinsDraws}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>

@@ -27,14 +27,11 @@ export default function MainLayout () {
 
   return (
     <div>
-
       <CssBaseline />
-
       <MainAppBar
         isDrawerOpen={isDrawerOpen}
         onToggleDrawer={() => onToggleDrawer()}
       />
-
       <MainDrawer
         isDrawerOpen={isDrawerOpen}
         onToggleDrawer={() => onToggleDrawer()}
@@ -56,14 +53,10 @@ export default function MainLayout () {
           }
         ]}
       />
-
       <main className={clsx(classes.content, {[classes.contentShift]: isDrawerOpen})}>
         <div className={classes.drawerHeader} />
-
         <RouterView />
-
       </main>
-
     </div>
   );
 }

@@ -12,7 +12,6 @@ type MainAppBarProps = {
   isDrawerOpen: boolean,
   onToggleDrawer: () => void
 }
-
 export default function MainAppBar (props: MainAppBarProps) {
   const classes = useStyles();
 
