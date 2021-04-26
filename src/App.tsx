@@ -1,11 +1,10 @@
-import { ReactElement } from 'react';
-import GameTicTacToe from './components/games/TicTacToe';
+import MainLayout from './layouts/MainLayout';
 
-function App (): ReactElement {
+function App () {
   return (
-    <>
-      <GameTicTacToe />
-    </>
+    <div>
+      <MainLayout />
+    </div>
   );
 }
 

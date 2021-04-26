@@ -47,7 +47,7 @@ class Square extends React.Component<SquareProps, SquareState> {
     super(props);
   }
 
-  render (): ReactElement {
+  render () {
     return (
       <>
         <button className="square" onClick={() => this.props.onClick()}>{this.props.value}</button>
@@ -80,7 +80,7 @@ class Board extends React.Component<BoardProps, BoardState> {
     );
   }
 
-  render (): ReactElement {
+  render () {
     return (
       <>
         <div className="board">
@@ -254,7 +254,7 @@ class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeSta
     }
   }
 
-  render (): ReactElement {
+  render () {
     const historyState = this.state.history;
     const currentState = historyState[this.state.moveNumber];
     const currentPlayer = this.state.isNextX ? 'X' : 'O';
@@ -272,70 +272,72 @@ class GameTicTacToe extends React.Component<GameTicTacToeProps, GameTicTacToeSta
     }
 
     return (
-      <div className="game-parent">
-        <h1>Tic Tac Toe</h1>
-        <div className="game-alert" ref={this.refGameAlert} />
-        <div className="game-container">
-          <div className="game-left">
-            <div className="game-buttons">
-              <button className="button-game button-new" onClick={() => this.newGame()}>New Game</button>
-              <button className="button-game button-reset" onClick={() => this.resetBoard()}>Reset Board</button>
-              <button className="button-game button-test" onClick={() => this.test()}>Test</button>
+      <>
+        <div className="game-parent">
+          <h1>Tic Tac Toe</h1>
+          <div className="game-alert" ref={this.refGameAlert} />
+          <div className="game-container">
+            <div className="game-left">
+              <div className="game-buttons">
+                <button className="button-game button-new" onClick={() => this.newGame()}>New Game</button>
+                <button className="button-game button-reset" onClick={() => this.resetBoard()}>Reset Board</button>
+                <button className="button-game button-test" onClick={() => this.test()}>Test</button>
+              </div>
             </div>
-          </div>
-          <div className="game-board">
-            <Board
-              squareValues={currentState.squareValues}
-              onClick={(i: number) => this.handleClick(i)}
-            />
-            <div className="game-bottom">
-              <div>{currentWinner || isBoardFull ? '' : `Current player: ${currentPlayer}`}</div>
+            <div className="game-board">
+              <Board
+                squareValues={currentState.squareValues}
+                onClick={(i: number) => this.handleClick(i)}
+              />
+              <div className="game-bottom">
+                <div>{currentWinner || isBoardFull ? '' : `Current player: ${currentPlayer}`}</div>
+              </div>
             </div>
-          </div>
-          <div className="game-right">
-            <div>
-              <table className="table-game">
-                <thead>
-                  <tr>
-                    <th colSpan={2}>Game</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Game</td>
-                    <td>{this.state.gameNumber}</td>
-                  </tr>
-                  <tr>
-                    <td>Move</td>
-                    <td>{this.state.moveNumber}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <table className="table-wins">
-                <thead>
-                  <tr>
-                    <th colSpan={2}>Wins</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Player X</td>
-                    <td>{this.state.wins.X}</td>
-                  </tr>
-                  <tr>
-                    <td>Player O</td>
-                    <td>{this.state.wins.O}</td>
-                  </tr>
-                  <tr>
-                    <td>Draws</td>
-                    <td>{this.state.wins.draws}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="game-right">
+              <div>
+                <table className="table-game">
+                  <thead>
+                    <tr>
+                      <th colSpan={2}>Game</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Game</td>
+                      <td>{this.state.gameNumber}</td>
+                    </tr>
+                    <tr>
+                      <td>Move</td>
+                      <td>{this.state.moveNumber}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table className="table-wins">
+                  <thead>
+                    <tr>
+                      <th colSpan={2}>Wins</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Player X</td>
+                      <td>{this.state.wins.X}</td>
+                    </tr>
+                    <tr>
+                      <td>Player O</td>
+                      <td>{this.state.wins.O}</td>
+                    </tr>
+                    <tr>
+                      <td>Draws</td>
+                      <td>{this.state.wins.draws}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 }
