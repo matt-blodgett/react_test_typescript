@@ -1,11 +1,13 @@
+import { BrowserRouter } from 'react-router-dom';
+
 import MainLayout from './layouts/MainLayout';
 
-function App () {
+export default function App () {
   return (
     <div>
-      <MainLayout />
+      <BrowserRouter>
+        <MainLayout />
+      </BrowserRouter>
     </div>
   );
 }
-
-export default App;

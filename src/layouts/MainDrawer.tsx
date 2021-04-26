@@ -1,26 +1,27 @@
-import { useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Typography from '@material-ui/core/Typography';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 
 import useStyles from './mainStyle';
 
+type MainDrawerItem = {
+  text: string,
+  action: Function,
+  icon: JSX.Element
+}
+
 type MainDrawerProps = {
   isDrawerOpen: boolean,
-  onToggleDrawer: Function
+  onToggleDrawer: Function,
+  drawerItems: Array<MainDrawerItem>
 }
 
 export default function MainDrawer (props: MainDrawerProps) {
   const classes = useStyles();
-  const theme = useTheme();
 
   return (
     <Drawer
@@ -34,18 +35,18 @@ export default function MainDrawer (props: MainDrawerProps) {
     >
 
       <div className={classes.drawerHeader}>
-        <IconButton onClick={() => props.onToggleDrawer()}>
-          {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
+        <Typography variant="h6" noWrap>
+          Nav Menu
+        </Typography>
       </div>
 
       <Divider />
 
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
+        {props.drawerItems.map((drawerItem) => (
+          <ListItem button key={drawerItem.text} onClick={() => drawerItem.action()}>
+            <ListItemIcon>{drawerItem.icon}</ListItemIcon>
+            <ListItemText primary={drawerItem.text} />
           </ListItem>
         ))}
       </List>
@@ -53,13 +54,8 @@ export default function MainDrawer (props: MainDrawerProps) {
       <Divider />
 
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
       </List>
+
     </Drawer>
   );
 }

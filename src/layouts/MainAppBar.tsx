@@ -33,7 +33,7 @@ export default function MainAppBar (props: MainAppBarProps) {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap>
-          Persistent drawer
+          Generic Brand Name
         </Typography>
       </Toolbar>
     </AppBar>
