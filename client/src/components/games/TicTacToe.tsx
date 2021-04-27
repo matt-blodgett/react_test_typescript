@@ -221,7 +221,7 @@ export default function TicTacToe () {
       return;
     }
 
-    cellValues[cell] = gameState.isNextX ? 'X' : 'O';;
+    cellValues[cell] = gameState.isNextX ? 'X' : 'O';
 
     setGameState({
       ...gameState,
