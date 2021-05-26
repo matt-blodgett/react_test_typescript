@@ -37,7 +37,7 @@ const corsOptions: cors.CorsOptions = {
 }
 
 if (process.env.DEBUG) {
-  process.on('unhandledRejection', function(reason) {
+  process.on('unhandledRejection', reason => {
     debugLog('Unhandled Rejection:', reason);
     process.exit(-1);
   });
